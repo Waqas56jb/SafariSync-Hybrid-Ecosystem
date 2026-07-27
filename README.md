@@ -9,4 +9,12 @@ npm install
 npm run dev
 ```
 
-Admin demo remains at `admin/admin.html`.
+## Admin (React)
+
+```bash
+cd admin
+npm install
+npm run dev
+```
+
+Demo admin login: any credentials (prefilled `admin@vistaazul.co` / `admin123`).

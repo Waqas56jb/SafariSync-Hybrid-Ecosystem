@@ -1,16 +1,25 @@
-# React + Vite
+# Vista Azul Client (React)
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Customer-facing booking site and trip dashboard, converted from the original single-page HTML.
 
-Currently, two official plugins are available:
+## Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+cd client
+npm install
+npm run dev
+```
 
-## React Compiler
+Open the URL Vite prints (usually http://localhost:5173).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Scripts
 
-## Expanding the Oxlint configuration
+- `npm run dev` — development server
+- `npm run build` — production build to `dist/`
+- `npm run preview` — preview production build
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Features
+
+- Marketing site: hero, tours, live gallery, concierge, testimonials
+- Auth modal (demo login)
+- Customer dashboard: overview charts, bookings, photos upload, payments, rewards, support, settings

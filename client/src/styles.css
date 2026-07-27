@@ -361,6 +361,7 @@ tr:hover td{background:#FAFBF9}
   .bot-wrap{grid-template-columns:1fr;gap:2.5rem}
   .bookbar{grid-template-columns:1fr 1fr}
   .bookbar .go{grid-column:1/-1}
+  .bookbar .go .btn{width:100%}
   .kpis{grid-template-columns:1fr 1fr}
   .g-21{grid-template-columns:1fr}
   .foot-grid{grid-template-columns:1fr 1fr}
@@ -432,6 +433,7 @@ tr:hover td{background:#FAFBF9}
   .wa-cta .btn{width:100%}
   .bot-wrap{gap:2rem}
   .tbl,.scroll-x table{min-width:520px}
+  table{min-width:520px}
   .btn{padding:.8rem 1.25rem;font-size:.88rem}
   .mobile-menu a{font-size:1.3rem}
 }

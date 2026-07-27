@@ -10,7 +10,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js'
-import { DIM, GRID } from '../data'
+import { DIM, GRID } from './data'
 
 let registered = false
 

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import BrandMark from './BrandMark'
 import Overview from './Overview'
 import Bookings from './Bookings'
@@ -29,6 +29,21 @@ export default function Shell({ onLogout }) {
   const [galleryPending, setGalleryPending] = useState(6)
 
   const [title, subtitle] = VIEW_TITLES[view] || VIEW_TITLES.overview
+
+  useEffect(() => {
+    document.body.style.overflow = sideOpen ? 'hidden' : ''
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [sideOpen])
+
+  useEffect(() => {
+    const onResize = () => {
+      if (window.innerWidth > 900) setSideOpen(false)
+    }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   function go(id) {
     setView(id)

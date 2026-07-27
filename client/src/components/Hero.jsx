@@ -37,11 +37,11 @@ export default function Hero({ onOpenAuth }) {
         </p>
         <div className="hero-cta">
           <a className="btn btn-gold" href="#tours">
-            <Compass />
+            <Compass className="lucide" />
             Explore safaris
           </a>
           <a className="btn btn-ghost" href="#bot">
-            <MessageCircle />
+            <MessageCircle className="lucide" />
             WhatsApp concierge
           </a>
         </div>
@@ -49,7 +49,7 @@ export default function Hero({ onOpenAuth }) {
       <div className="bookbar" role="search" aria-label="Quick booking">
         <div className="cell">
           <label>
-            <Map />
+            <Map className="lucide" />
             Safari
           </label>
           <select id="qTour" defaultValue={tours[0].bookOption}>
@@ -62,14 +62,14 @@ export default function Hero({ onOpenAuth }) {
         </div>
         <div className="cell">
           <label>
-            <Calendar />
+            <Calendar className="lucide" />
             Date
           </label>
           <input type="date" id="qDate" defaultValue="2026-08-08" />
         </div>
         <div className="cell">
           <label>
-            <Users />
+            <Users className="lucide" />
             Guests · min 10
           </label>
           <input
@@ -82,7 +82,7 @@ export default function Hero({ onOpenAuth }) {
         </div>
         <div className="go">
           <button type="button" className="btn btn-teal" onClick={quickBook}>
-            <Search />
+            <Search className="lucide" />
             Check availability
           </button>
         </div>

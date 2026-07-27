@@ -1,5 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
-import { useMemo } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { Bar } from 'react-chartjs-2'
 import { BarChart2, ImagePlus, Images, Radio, UploadCloud } from 'lucide-react'
 import { TEAL, GOLD, CORAL, DEEP, GRID, chartTip, registerCharts } from './charts'

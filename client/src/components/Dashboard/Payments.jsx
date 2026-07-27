@@ -3,7 +3,6 @@ import { Doughnut } from 'react-chartjs-2'
 import {
   Check,
   CheckCircle2,
-  CreditCard,
   Download,
   PieChart,
   Receipt,

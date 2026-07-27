@@ -398,7 +398,7 @@ tr:hover td{background:#FAFBF9}
   section{padding:4.5rem 0}
   .reward-hero{grid-template-columns:1fr;justify-items:center;text-align:center}
   .d-search{min-width:0;flex:1}
-  .chart-box{height:210px}
+  .chart-box{height:200px}
 }
 </style>
 </head>
@@ -994,48 +994,31 @@ function switchTab(t){
  authTitle.textContent=l?'Welcome back':'Create your account';
  authSub.textContent=l?'Log in to manage your bookings and galleries.':'Book safaris, get WhatsApp updates, share photos.'}
 
-/* dashboard shell */
-const dash=document.getElementById('dash'),dSideEl=document.getElementById('dSideEl'),dOvl=document.getElementById('dOvl');
-let coreCharts=false;
-function doLogin(e){e.preventDefault();closeAuth();dash.classList.add('on');document.body.style.overflow='hidden';
- if(!coreCharts){requestAnimationFrame(()=>{buildHome();lucide.createIcons()});coreCharts=true}}
-function logout(){dash.classList.remove('on');document.body.style.overflow=''}
-function dSide(force){const open=force===undefined?!dSideEl.classList.contains('open'):force;
- dSideEl.classList.toggle('open',open);dOvl.classList.toggle('on',open)}
-const dTitles={home:['¡Hola, María!','Your next blue day is in 12 days · Ticket VA-2841'],
- bookings:['My bookings','6 bookings · 1 upcoming'],
- photos:['Photos & gallery','Upload to your group\'s live gallery'],
- payments:['Payments','Cards, wallets & invoices'],
- rewards:['Rewards','Gold member · 620 points'],
- support:['Support','Azul answers in ~1.8 seconds'],
- settings:['Settings','Profile, language & notifications']};
-const builtD={};
-function dGo(btn){
- document.querySelectorAll('.d-link').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
- const v=btn.dataset.v;
- document.querySelectorAll('.d-view').forEach(s=>s.classList.remove('on'));
- document.getElementById('dv-'+v).classList.add('on');
- dTitle.textContent=dTitles[v][0];dSub.textContent=dTitles[v][1];
- dSide(false);document.querySelector('.d-main').scrollTo({top:0});
- requestAnimationFrame(()=>{
-  if(v==='bookings'&&!builtD.b){buildBookings();builtD.b=1}
-  if(v==='photos'&&!builtD.p){buildPhotos();builtD.p=1}
-  if(v==='payments'&&!builtD.pay){buildPay();builtD.pay=1}
-  if(v==='rewards'&&!builtD.r){buildPts();builtD.r=1}
-  lucide.createIcons()})}
-
 /* activity feed */
 const acts=[
- ['check-circle-2','#12A150','Booking VA-2841 confirmed','Jul 21 · 10:02'],
- ['credit-card','#0FA3A0','Payment of $1,068 received','Jul 21 · 10:01'],
- ['image','#F2A93B','14 photos approved to gallery','Jun 14 · 19:40'],
- ['gift','#FF6B5C','+120 loyalty points earned','Jun 14 · 19:00'],
- ['message-circle','#0FA3A0','Azul sent your tour album','Jun 15 · 09:12']];
-actList.innerHTML=acts.map(([i,c,t,tm])=>`
- <div style="display:flex;gap:.75rem;align-items:center;background:var(--sand);border:1px solid var(--line);border-radius:12px;padding:.65rem .85rem">
-  <i data-lucide="${i}" class="lucide" style="color:${c}"></i>
-  <div style="flex:1;font-size:.83rem;font-weight:600">${t}</div>
-  <span class="mono" style="font-size:.66rem;color:var(--muted);white-space:nowrap">${tm}</span></div>`).join('');
+ ['check-circle-2','#E1F7EB','#12A150','Booking VA-2841 confirmed','Jul 21 · 10:02'],
+ ['credit-card','#E3F5F4','#0FA3A0','Payment of $1,068 received','Jul 21 · 10:01'],
+ ['image','#FCF1DC','#B07514','14 photos approved to gallery','Jun 14 · 19:40'],
+ ['gift','#FFE9E5','#FF6B5C','+120 loyalty points earned','Jun 14 · 19:00'],
+ ['message-circle','#E3F5F4','#0FA3A0','Azul sent your tour album','Jun 15 · 09:12'],
+ ['calendar','#EDF1F3','#0A3D4A','Reminder: Beach Safari in 12 days','Jul 26 · 08:00']];
+actList.innerHTML=acts.map(([i,bg,c,t,tm])=>`
+ <div class="act-item">
+  <span class="act-ico" style="background:${bg};color:${c}"><i data-lucide="${i}"></i></span>
+  <div style="flex:1;font-size:.82rem;font-weight:600;line-height:1.3">${t}</div>
+  <span class="mono" style="font-size:.64rem;color:var(--muted);white-space:nowrap">${tm}</span></div>`).join('');
+
+/* seed sample uploads */
+(function seedUploads(){
+ const ug=document.getElementById('upGrid');
+ const samples=[
+  ['photo-1544551763-46a013bb70d5','reef-snorkel.jpg','Live ✓','ok'],
+  ['photo-1500375592092-40eb2168fd21','sunset-sail.jpg','Live ✓','ok'],
+  ['photo-1551024709-8f23befc6f87','rooftop-toast.jpg','In review','pend']];
+ ug.innerHTML=samples.map(([id,name,st,cls])=>`
+  <div class="up-card"><img src="https://images.unsplash.com/${id}?auto=format&fit=crop&w=400&q=80" alt="">
+   <div class="m"><b>${name}</b><div class="bar"><i style="width:100%"></i></div><span class="tag ${cls}">${st}</span></div></div>`).join('');
+})();
 
 /* photo upload */
 function initUpload(){
@@ -1060,42 +1043,98 @@ initUpload();
 
 /* ═════ CHARTS ═════ */
 const TEAL='#0FA3A0',GOLD='#F2A93B',CORAL='#FF6B5C',DEEP='#0A3D4A',GRID='rgba(11,37,50,.07)';
-function chartBase(){Chart.defaults.font.family="'Space Grotesk',monospace";Chart.defaults.color='#5C7580';Chart.defaults.font.size=10.5}
+const chartTip={backgroundColor:'#0B2532',padding:11,cornerRadius:9,titleFont:{size:11},bodyFont:{size:11}};
+function chartBase(){
+ if(typeof Chart==='undefined')return;
+ Chart.defaults.font.family="'Plus Jakarta Sans',sans-serif";
+ Chart.defaults.color='#5C7580';
+ Chart.defaults.font.size=11}
+function mkChart(id,cfg){
+ const el=document.getElementById(id);if(!el||typeof Chart==='undefined')return null;
+ const prev=Chart.getChart(el);if(prev)prev.destroy();
+ const chart=new Chart(el,cfg);
+ setTimeout(()=>chart.resize(),40);
+ setTimeout(()=>chart.resize(),200);
+ return chart}
+function resizeCharts(ids){
+ ids.forEach(id=>{const c=typeof Chart!=='undefined'&&Chart.getChart(id);if(c)c.resize()})}
 function buildHome(){
  chartBase();
- const c=document.getElementById('chSpend').getContext('2d');
- const g=c.createLinearGradient(0,0,0,250);
- g.addColorStop(0,'rgba(15,163,160,.32)');g.addColorStop(1,'rgba(15,163,160,0)');
- new Chart(c,{type:'line',data:{labels:['Dec','Jan','Feb','Mar','Apr','May','Jun','Jul'],
-  datasets:[{label:'Spend',data:[1246,0,0,320,649,0,740,1068],fill:true,backgroundColor:g,borderColor:TEAL,borderWidth:2.6,tension:.42,pointRadius:4,pointBackgroundColor:'#fff',pointBorderColor:TEAL,pointBorderWidth:2.2}]},
-  options:{maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#0B2532',padding:11,cornerRadius:9,callbacks:{label:x=>' $'+x.parsed.y.toLocaleString()}}},
-   scales:{y:{grid:{color:GRID},border:{display:false},ticks:{callback:v=>'$'+v}},x:{grid:{display:false},border:{display:false}}}}});
- new Chart(document.getElementById('chMix'),{type:'doughnut',
-  data:{labels:['Beach Safari','City View','Taste & View'],datasets:[{data:[3,2,1],backgroundColor:[TEAL,DEEP,GOLD],borderWidth:4,borderColor:'#fff',hoverOffset:9,borderRadius:5}]},
-  options:{maintainAspectRatio:false,cutout:'70%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,padding:13,font:{size:10.5}}}}}})}
+ const canvas=document.getElementById('chSpend');
+ const c=canvas.getContext('2d');
+ const h=canvas.parentElement?.clientHeight||230;
+ const g=c.createLinearGradient(0,0,0,h);
+ g.addColorStop(0,'rgba(15,163,160,.38)');g.addColorStop(1,'rgba(15,163,160,0)');
+ mkChart('chSpend',{type:'line',data:{labels:['Dec','Jan','Feb','Mar','Apr','May','Jun','Jul'],
+  datasets:[{label:'Spend',data:[1246,180,420,320,649,510,740,1068],fill:true,backgroundColor:g,borderColor:TEAL,borderWidth:2.8,tension:.4,pointRadius:4.5,pointHoverRadius:6,pointBackgroundColor:'#fff',pointBorderColor:TEAL,pointBorderWidth:2.2}]},
+  options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+   plugins:{legend:{display:false},tooltip:{...chartTip,callbacks:{label:x=>' $'+x.parsed.y.toLocaleString()}}},
+   scales:{y:{beginAtZero:true,grid:{color:GRID},border:{display:false},ticks:{callback:v=>'$'+v,font:{size:10}}},x:{grid:{display:false},border:{display:false}}}}});
+ mkChart('chMix',{type:'doughnut',
+  data:{labels:['Beach Safari','City View','Taste & View'],datasets:[{data:[3,2,1],backgroundColor:[TEAL,DEEP,GOLD],borderWidth:5,borderColor:'#fff',hoverOffset:8}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:'68%',
+   plugins:{legend:{display:false},tooltip:{...chartTip}}}})}
 function buildBookings(){
  chartBase();
- new Chart(document.getElementById('chGroup'),{type:'bar',
-  data:{labels:['Oct 25','Dec 25','Apr 26','Jun 26','Aug 26'],datasets:[{data:[16,14,11,10,12],backgroundColor:[DEEP,TEAL,GOLD,CORAL,TEAL],borderRadius:8,barThickness:24}]},
-  options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:GRID},border:{display:false},title:{display:true,text:'GUESTS',font:{size:8.5}}},x:{grid:{display:false},border:{display:false}}}}})}
+ mkChart('chGroup',{type:'bar',
+  data:{labels:['Oct','Dec','Apr','Jun','Aug'],datasets:[{label:'Guests',data:[16,14,11,10,12],backgroundColor:[DEEP,TEAL,GOLD,CORAL,TEAL],borderRadius:9,borderSkipped:false,barPercentage:.65,categoryPercentage:.7}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...chartTip}},
+   scales:{y:{beginAtZero:true,grid:{color:GRID},border:{display:false},ticks:{stepSize:4}},x:{grid:{display:false},border:{display:false}}}}})}
 function buildPhotos(){
  chartBase();
- new Chart(document.getElementById('chPhotos'),{type:'bar',
-  data:{labels:['VA-2604','VA-2650','VA-2712','VA-2790','VA-2841'],datasets:[{data:[21,44,18,39,26],backgroundColor:[DEEP,TEAL,GOLD,CORAL,TEAL],borderRadius:8,barThickness:22}]},
-  options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:GRID},border:{display:false}},x:{grid:{display:false},border:{display:false},ticks:{font:{size:9}}}}}})}
+ mkChart('chPhotos',{type:'bar',
+  data:{labels:['VA-2604','VA-2650','VA-2712','VA-2790','VA-2841'],datasets:[{label:'Photos',data:[21,44,18,39,26],backgroundColor:[DEEP,TEAL,GOLD,CORAL,TEAL],borderRadius:9,borderSkipped:false,barPercentage:.65,categoryPercentage:.7}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...chartTip}},
+   scales:{y:{beginAtZero:true,grid:{color:GRID},border:{display:false}},x:{grid:{display:false},border:{display:false},ticks:{font:{size:9}}}}}})}
 function buildPay(){
  chartBase();
- new Chart(document.getElementById('chPay'),{type:'doughnut',
-  data:{labels:['Beach Safari','City View','Taste & View'],datasets:[{data:[2314,1593,740],backgroundColor:[TEAL,DEEP,GOLD],borderWidth:4,borderColor:'#fff',hoverOffset:9,borderRadius:5}]},
-  options:{maintainAspectRatio:false,cutout:'68%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,padding:12,font:{size:10.5}}},tooltip:{callbacks:{label:x=>' $'+x.parsed.toLocaleString()}}}}})}
+ mkChart('chPay',{type:'doughnut',
+  data:{labels:['Beach Safari','City View','Taste & View'],datasets:[{data:[2314,1593,740],backgroundColor:[TEAL,DEEP,GOLD],borderWidth:5,borderColor:'#fff',hoverOffset:8}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:'66%',
+   plugins:{legend:{display:false},tooltip:{...chartTip,callbacks:{label:x=>' $'+x.parsed.toLocaleString()}}}}})}
 function buildPts(){
  chartBase();
- const c=document.getElementById('chPts').getContext('2d');
- const g=c.createLinearGradient(0,0,0,220);
- g.addColorStop(0,'rgba(242,169,59,.35)');g.addColorStop(1,'rgba(242,169,59,0)');
- new Chart(c,{type:'line',data:{labels:['Oct','Dec','Apr','Jun','Jul'],
-  datasets:[{data:[95,220,330,500,620],fill:true,backgroundColor:g,borderColor:GOLD,borderWidth:2.6,tension:.4,pointRadius:4,pointBackgroundColor:'#fff',pointBorderColor:GOLD,pointBorderWidth:2.2}]},
-  options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:GRID},border:{display:false}},x:{grid:{display:false},border:{display:false}}}}})}
+ const canvas=document.getElementById('chPts');
+ const c=canvas.getContext('2d');
+ const h=canvas.parentElement?.clientHeight||190;
+ const g=c.createLinearGradient(0,0,0,h);
+ g.addColorStop(0,'rgba(242,169,59,.42)');g.addColorStop(1,'rgba(242,169,59,0)');
+ mkChart('chPts',{type:'line',data:{labels:['Oct','Dec','Apr','Jun','Jul'],
+  datasets:[{label:'Points',data:[95,220,330,500,620],fill:true,backgroundColor:g,borderColor:GOLD,borderWidth:2.8,tension:.4,pointRadius:4.5,pointHoverRadius:6,pointBackgroundColor:'#fff',pointBorderColor:GOLD,pointBorderWidth:2.2}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...chartTip}},
+   scales:{y:{beginAtZero:true,grid:{color:GRID},border:{display:false}},x:{grid:{display:false},border:{display:false}}}}})}
+
+/* dashboard shell */
+const dash=document.getElementById('dash'),dSideEl=document.getElementById('dSideEl'),dOvl=document.getElementById('dOvl');
+let coreCharts=false;
+function doLogin(e){e.preventDefault();closeAuth();dash.classList.add('on');document.body.style.overflow='hidden';
+ if(!coreCharts){setTimeout(()=>{buildHome();lucide.createIcons();coreCharts=true},80)}
+ else setTimeout(()=>resizeCharts(['chSpend','chMix']),60)}
+function logout(){dash.classList.remove('on');document.body.style.overflow=''}
+function dSide(force){const open=force===undefined?!dSideEl.classList.contains('open'):force;
+ dSideEl.classList.toggle('open',open);dOvl.classList.toggle('on',open)}
+const dTitles={home:['¡Hola, María!','Your next blue day is in 12 days · Ticket VA-2841'],
+ bookings:['My bookings','6 bookings · 1 upcoming'],
+ photos:['Photos & gallery','Upload to your group\'s live gallery'],
+ payments:['Payments','Cards, wallets & invoices'],
+ rewards:['Rewards','Gold member · 620 points'],
+ support:['Support','Azul answers in ~1.8 seconds'],
+ settings:['Settings','Profile, language & notifications']};
+const builtD={};
+function dGo(btn){
+ document.querySelectorAll('.d-link').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+ const v=btn.dataset.v;
+ document.querySelectorAll('.d-view').forEach(s=>s.classList.remove('on'));
+ document.getElementById('dv-'+v).classList.add('on');
+ dTitle.textContent=dTitles[v][0];dSub.textContent=dTitles[v][1];
+ dSide(false);document.querySelector('.d-main').scrollTo({top:0});
+ setTimeout(()=>{
+  if(v==='home')resizeCharts(['chSpend','chMix']);
+  if(v==='bookings'){if(!builtD.b){buildBookings();builtD.b=1}else resizeCharts(['chGroup'])}
+  if(v==='photos'){if(!builtD.p){buildPhotos();builtD.p=1}else resizeCharts(['chPhotos'])}
+  if(v==='payments'){if(!builtD.pay){buildPay();builtD.pay=1}else resizeCharts(['chPay'])}
+  if(v==='rewards'){if(!builtD.r){buildPts();builtD.r=1}else resizeCharts(['chPts'])}
+  lucide.createIcons()},50)}
 
 /* icons */
 lucide.createIcons();
